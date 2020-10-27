@@ -6,6 +6,8 @@ i wrote with my friend [@e1four15f](https://github.com/e1four15f).
 `ofsed` can handle *only* substitution commands, because it is most frequent usecase and dealing with line breaks in
 xml from office files can be kinda tricky.
 
+If you want to `grep` things from office files, check out [office cat](https://github.com/readysloth-Tools/office-cat)
+
 ## How to launch
 
 Most likely you want to launch it like this:
