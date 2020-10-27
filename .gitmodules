@@ -1,0 +1,3 @@
+[submodule "python-coreutils"]
+	path = python_coreutils
+	url = git@github.com:readysloth/python-coreutils.git
