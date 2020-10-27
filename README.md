@@ -10,6 +10,12 @@ If you want to `grep` things from office files, check out [office cat](https://g
 
 ## How to launch
 
+Download repository:
+
+```
+git clone --recursive https://github.com/readysloth-Tools/office-sed.git
+```
+
 Most likely you want to launch it like this:
 
 ```
