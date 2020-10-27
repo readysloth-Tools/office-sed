@@ -16,7 +16,7 @@ sys.path.append('python_coreutils')
 
 from python_coreutils.coreutils.sed import sed_substitute
 
-def get_content_file_path(docx: bool):
+def get_content_file_path(docx: bool) -> str:
     return 'word/document.xml' if docx else 'content.xml'
 
 def get_contents(path_to_doc: Path, docx: bool) -> minidom.Document:
