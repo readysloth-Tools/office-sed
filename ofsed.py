@@ -1,7 +1,9 @@
 
 import re
 import sys
+import shutil
 import zipfile
+import tempfile
 import argparse
 import typing as t
 
@@ -13,9 +15,12 @@ sys.path.append('python_coreutils')
 
 from python_coreutils.coreutils.sed import sed_substitute
 
+def get_content_file_path(docx: bool):
+    return 'word/document.xml' if docx else 'content.xml'
+
 def get_contents(path_to_doc: Path, docx: bool) -> minidom.Document:
     with zipfile.ZipFile(str(path_to_doc), 'r') as doc:
-        content_file_path = 'word/document.xml' if docx else 'content.xml'
+        content_file_path = get_content_file_path(docx)
         with doc.open(content_file_path) as content:
             xml = content.read()
             dom = minidom.parseString(xml)
@@ -24,10 +29,15 @@ def get_contents(path_to_doc: Path, docx: bool) -> minidom.Document:
 
 
 def set_contents(path_to_doc: Path, docx: bool, contents: t.Iterable[str]):
-    with zipfile.ZipFile(str(path_to_doc), 'r') as doc:
-        content_file_path = 'word/document.xml' if docx else 'content.xml'
-        with doc.open(content_file_path) as content:
-            xml = content.writelines(contents)
+    content_file_path = get_content_file_path(docx)
+    with tempfile.TemporaryDirectory() as extract_dir:
+        with zipfile.ZipFile(str(path_to_doc), 'r') as doc:
+            doc.extractall(extract_dir)
+        with open(Path(extract_dir) / Path(content_file_path), 'w') as content_file:
+            content_file.write(''.join(contents))
+        
+        new_doc = shutil.make_archive(path_to_doc.stem, 'zip', extract_dir)
+        shutil.move(new_doc, str(path_to_doc))
 
 
 def sed_content(cmd: str,
@@ -70,9 +80,9 @@ args = parser.parse_args()
 
 if not hasattr(args, 'inplace') or not args.inplace:
     print('This program changes file contents inplace!')
-    print('Be careful with that! If you want this nag dissapear on start')
-    print('launch program with "-i" flag')
-    input('Are you conscious about that? [Press <Enter> or abort]')
+    print('Be careful with that!')
+    print('If you want this nag dissapear on start launch program with "-i" flag')
+    input('Do you *really* want to continue? [Press <Enter> or abort]')
     input('Last chance to turn back [Press <Enter> or abort]')
 
 for path in args.PATH:
